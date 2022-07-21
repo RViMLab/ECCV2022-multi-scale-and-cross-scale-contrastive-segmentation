@@ -3,8 +3,7 @@ Implementation of "Multi-scale and Cross-scale Contrastive Learning for Semantic
 
 arxiv link : https://arxiv.org/abs/2203.13409
 
-
-![fig](misc\\figs\\fig1-01-01.png)
+![fig](https://github.com/RViMLab/MS_CS_ContrSeg/misc/figs/fig1-01-01.png)
 
 > [**Multi-scale and Cross-scale Contrastive Learning for Semantic Segmentation**](https://arxiv.org/abs/2203.13409),            
 > [Theodoros Pissas](https://rvim.online/author/theodoros-pissas/), [Claudio S. Ravasio](https://rvim.online/author/claudio-ravasio/), [Lyndon Da Cruz](), [Christos Bergeles](https://rvim.online/author/christos-bergeles/)  <br>
