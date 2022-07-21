@@ -1,0 +1,23 @@
+name: semseg
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch
+  - cudatoolkit=10.1
+  - tensorboard
+  - torchvision=0.9.1
+  - h5py
+  - matplotlib
+  - numpy
+  - scipy
+  - pandas
+  - pillow
+  - pip
+  - future
+  - pip:
+    - opencv-python
+    - tqdm
+    - timm
+    - tsne-torch

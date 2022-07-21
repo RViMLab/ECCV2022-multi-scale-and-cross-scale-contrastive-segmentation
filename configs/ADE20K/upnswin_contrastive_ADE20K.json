@@ -1,0 +1,80 @@
+{
+  "name": "upn",
+  "mode": "training",
+  "manager": "OCRNet",
+  "graph": {
+    "model": "UPerNet",
+    "backbone": "swinT",
+    "sync_bn":true,
+    "out_stride": 32,
+    "pretrained": false,
+    "align_corners": false,
+    "aux_head":{"in_index": 3, "dropout_rate": 0.1},
+    "dropout_rate" : 0.1,
+    "ms_projector": {"mlp": [[1, -1, 1]],  "scales":4, "d": 256, "use_bn": true, "position":"fpn"}
+  },
+
+  "load_last": false,
+  "tta":false,
+  "tta_scales": [0.5, 0.75, 1.25, 1.5, 1.75],
+
+  "data": {
+    "num_workers":0,
+    "dataset": "ADE20K",
+    "use_relabeled": false,
+    "blacklist": false,
+    "experiment": 1,
+    "split": ["train", "val"],
+    "transforms": ["flip",  "random_scale", "RandomCropImgLbl", "colorjitter", "torchvision_normalise"],
+    "transform_values": {"crop_shape":  [512, 512], "crop_class_max_ratio": 0.75,
+                         "scale_range": [0.5, 2]},
+    "transforms_val": ["resize_val", "torchvision_normalise"],
+    "transform_values_val": {"min_side_length": 512,
+                             "crop_class_max_ratio": 0.75,
+                             "fit_stride_val": 32},
+    "batch_size": 16
+  },
+
+    "loss": {
+      "name": "LossWrapper",
+      "label_scaling_mode": "nn",
+      "dominant_mode": "all",
+      "temperature": 0.1,
+      "cross_scale_contrast": true,
+      "weights": [1.0, 0.7, 0.4, 0.1],
+      "scales": 4,
+      "interm": {"name": "CrossEntropyLoss", "args": [], "weight": 0.4},
+      "final": {"name": "CrossEntropyLoss", "args": [], "weight": 1.0},
+      "losses": {"TwoScaleLoss": 1.0, "DenseContrastiveLossV2_ms": 0.1},
+      "losses__": {"TwoScaleLoss": 1.0},
+      "min_views_per_class": 5,
+      "max_views_per_class": 2500,
+      "max_features_total": 10000
+    },
+
+  "train": {
+    "lr_batchwise": true,
+    "learning_rate": 0.00006,
+    "lr_fct": "linear-warmup-polynomial",
+    "lr_params": {"power": 1.0,
+                  "warmup_iters": 1500,
+                  "warmup_rate": 1e-6 ,
+                  "min_lr": 0.0},
+    "optim": "AdamW",
+    "epochs": 127,
+    "epochs_bs12": 648,
+    "momentum": 0.9,
+    "betas": [0.9, 0.999],
+    "weight_decay": 0.01,
+    "opt_keys":{"absolute_pos_embed": {"wd_mult":0.0},
+                "norm": {"wd_mult":0.0},
+                "relative_position_bias_table":{"wd_mult": 0.0}}
+  },
+  "max_valid_imgs": 2,
+  "valid_freq": 10,
+  "log_every_n_epochs": 10,
+  "cuda": true,
+  "gpu_device": 0,
+  "parallel": false,
+  "seed": 100
+}

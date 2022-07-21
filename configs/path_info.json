@@ -1,0 +1,12 @@
+
+{
+  "theo_CTS": [
+        "D:\\datasets\\CITYSCAPES",
+        "D:\\datasets\\CITYSCAPES\\logs"
+  ],
+
+  "theo_ADE20K": [
+        "D:\\datasets\\ADEChallengeData2016",
+        "D:\\datasets\\ADEChallengeData2016\\logs"
+  ]
+}
