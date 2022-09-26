@@ -1,4 +1,4 @@
-# ECCV2022 Multi-scale and Cross-scale Learning
+# ECCV2022 Multi-scale and Cross-scale Contrastive Learning for Semantic Segmentation
 Implementation of "Multi-scale and Cross-scale Contrastive Learning for Semantic Segmentation", to appear at ECCV 2022
 
 arxiv link : https://arxiv.org/abs/2203.13409
