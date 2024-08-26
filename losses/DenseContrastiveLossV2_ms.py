@@ -3,13 +3,11 @@ import torch.nn as nn
 from utils import DATASETS_INFO, is_distributed, concat_all_gather, get_rank, to_numpy, printlog
 from torch.nn.functional import one_hot
 import torch.distributed
-import numpy as np
-import datetime
 from losses.DenseContrastiveLossV2 import DenseContrastiveLossV2 as DCV2
 
 def has_inf_or_nan(x):
     return torch.isinf(x).max().item(), torch.isnan(x).max().item()
-# -c configs/OCRNet_contrastive_CADIS.json  -u theo -cdn False  -debug
+
 
 class DenseContrastiveLossV2_ms(nn.Module):
     def __init__(self, config):
@@ -117,7 +115,6 @@ class DenseContrastiveLossV2_ms(nn.Module):
         loss2 = self.InfoNce_loss(pos_mask, neg_mask, dot_product)
         return loss2
 
-
     @staticmethod
     def get_masks2(lbl1, lbl2):
         """
@@ -129,9 +126,6 @@ class DenseContrastiveLossV2_ms(nn.Module):
         """
         # extract mask indicating same class samples
         pos_mask = torch.eq(lbl1, torch.transpose(lbl2, 0, 1)).float()  # mask T-T  # indicator of positives
-        pos_sums = pos_mask.sum(1)
-        # zero_pos_rows = (pos_sums == 0).nonzero().squeeze()
-        # ignore_mask = torch.ones(size=pos_mask.size())[zero_pos_rows]
         neg_mask = (1 - pos_mask)  # indicator of negatives
         return pos_mask, neg_mask
 
@@ -149,17 +143,15 @@ class DenseContrastiveLossV2_ms(nn.Module):
         neg_logits = neg_logits.sum(1, keepdim=True)
 
         exp_logits = torch.exp(logits)
-        # print('exp_logits ', has_inf_or_nan(exp_logits))
         log_prob = logits - torch.log(exp_logits + neg_logits)
-        # print('log_prob ', has_inf_or_nan(log_prob))
+
         pos_sums = pos.sum(1)
         ones = torch.ones(size=pos_sums.size())
         norm = torch.where(pos_sums > 0, pos_sums, ones.to(pos.device))
+
         mean_log_prob_pos = (pos * log_prob).sum(1) / norm   # normalize by positives
-        # print('\npositives: {} \nnegatives {}'.format(pos.sum(1), neg.sum(1)))
-        # print('mean_log_prob_pos ', has_inf_or_nan(mean_log_prob_pos))
+
         loss = - mean_log_prob_pos
-        # loss = - (self.temperature / self.base_temperature) * mean_log_prob_pos
 
         loss = loss.mean()
         # print('loss.mean() ', has_inf_or_nan(loss))
